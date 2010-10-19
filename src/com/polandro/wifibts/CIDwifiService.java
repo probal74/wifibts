@@ -58,7 +58,6 @@ public class CIDwifiService extends Service {
 		OpenCIDdb();
 		wifiMgr = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 		telMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-		
 		myReceiver = new SampleReceiver();
         IntentFilter filter = new IntentFilter(NEW_MSG_TO_SERVICE);
         registerReceiver(myReceiver, filter);
@@ -73,16 +72,13 @@ public class CIDwifiService extends Service {
             	SaveCIDdb();
             }              
         };
-        // Register the listener wit the telephony manager
+        // Register the listener with the telephony manager
         telMgr.listen(listener, PhoneStateListener.LISTEN_CELL_LOCATION);
 	}
 	
 	private void showDataFromIntent(Intent intent) {
-        String msg = intent.getStringExtra("ToService");
-        
-        	sendMSGtoGUI("Service already running.\n");
-       
-        
+        String msg = intent.getStringExtra("ToService"); 
+        sendMSGtoGUI("Service already running.\n");        
     }
 	
 	private void sendMSGtoGUI(String msg){
@@ -141,8 +137,7 @@ public class CIDwifiService extends Service {
 	    			}
 	    		}    		
 	    	}
-    	}
-    	
+    	}    	
     }
 	
 	@Override

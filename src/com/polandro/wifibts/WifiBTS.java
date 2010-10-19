@@ -18,11 +18,8 @@ public class WifiBTS extends Activity {
 	
 	public static final String NEW_MSG_TO_GUI = "com.gregory.Intents.MESSAGE_TO_GUI";
 	public static final String NEW_MSG_TO_SERVICE = "com.gregory.Intents.MESSAGE_TO_SERVICE";
-	
-	private TextView tv;
-	
+	private TextView tv;	
 	private SampleReceiver myReceiver;
-
 	
 	private class SampleReceiver extends BroadcastReceiver {
 	    @Override
@@ -90,7 +87,5 @@ public class WifiBTS extends Activity {
         unregisterReceiver(myReceiver);
         super.onDestroy();
     }
-    
-    
     
 }

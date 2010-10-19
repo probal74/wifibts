@@ -79,9 +79,9 @@ public class CIDwifiService extends Service {
 	
 	private void showDataFromIntent(Intent intent) {
         String msg = intent.getStringExtra("ToService");
-        if(msg=="PING"){
-        	sendMSGtoGUI("Service already running.");
-        }
+        
+        	sendMSGtoGUI("Service already running.\n");
+       
         
     }
 	

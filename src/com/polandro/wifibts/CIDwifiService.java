@@ -137,6 +137,7 @@ public class CIDwifiService extends Service {
 	    				CIDdb.addCID(current_cid);
 	    			}
 	    			else{
+	    				wifiMgr.setWifiEnabled(false);
 	    			}
 	    		}    		
 	    	}

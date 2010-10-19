@@ -1,5 +1,6 @@
 package com.polandro.wifibts;
 
+//FAjne to, test repozytorium
 
 import com.polandro.wifibts.R;
 import android.app.Activity;

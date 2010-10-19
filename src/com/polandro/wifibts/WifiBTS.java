@@ -1,9 +1,6 @@
 package com.polandro.wifibts;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
 import com.polandro.wifibts.R;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -11,8 +8,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,17 +16,12 @@ import android.widget.TextView;
 
 public class WifiBTS extends Activity {
 	
-	public static final String NEW_MSG = "com.gregory.Intents.CID_CHANGE";
-	private WifiManager wifiMgr;
+	public static final String NEW_MSG_TO_GUI = "com.gregory.Intents.MESSAGE_TO_GUI";
+	public static final String NEW_MSG_TO_SERVICE = "com.gregory.Intents.MESSAGE_TO_SERVICE";
+	
 	private TextView tv;
-	private CIDLocation CIDdb;
-	private String FILENAME = "cidloc.db";
-	private FileInputStream fis;
-	private ObjectInputStream ofis;
-	private FileOutputStream fos;
-	private ObjectOutputStream ofos;
+	
 	private SampleReceiver myReceiver;
-	private int current_cid;
 
 	
 	private class SampleReceiver extends BroadcastReceiver {
@@ -47,33 +37,22 @@ public class WifiBTS extends Activity {
         super.onCreate(savedInstanceState);
         tv = new TextView(this);
         myReceiver = new SampleReceiver();
-        IntentFilter filter = new IntentFilter(NEW_MSG);
-        registerReceiver(myReceiver, filter);
-        
-        wifiMgr = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+        IntentFilter filter = new IntentFilter(NEW_MSG_TO_GUI);
+        registerReceiver(myReceiver, filter);               
         setContentView(tv);
-        
-        OpenCIDdb();
+        tv.append("Herzlich wilkommen :)\n");
+        sendMSGtoService("PING");
     }
     
-    private void OpenCIDdb(){
-    	try {
-    		fis = openFileInput(FILENAME);
-			ofis = new ObjectInputStream(fis);
-			Object obj = ofis.readObject();
-			if(obj instanceof CIDLocation){
-				CIDdb = (CIDLocation)obj;
-				tv.append("Loaded DB. "+CIDdb.getNumberOfCIDs()+" known CIDs \n");
-			}
-		} catch (Exception e) {
-			tv.append("No file found. Creating new DB\n");
-			CIDdb = new CIDLocation();				
-		}
-    }
+    private void sendMSGtoService(String msg){
+		Intent intent = new Intent(NEW_MSG_TO_SERVICE);  
+    	intent.putExtra("ToService",msg);
+    	sendBroadcast(intent);
+	}
     
     private void showDataFromIntent(Intent intent) {
-        current_cid = intent.getIntExtra("ReceiverData", -1);
-        RefreshLACCID();
+        String msg = intent.getStringExtra("ToGUI");
+        tv.append(msg);
     }
     
     @Override
@@ -87,12 +66,7 @@ public class WifiBTS extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-        case R.id.refresh:
-        	RefreshLACCID();
-            return true;
-        case R.id.wifi_toggle:
-            WifiToggle();
-            return true;
+                
         case R.id.StartService:
         	ComponentName starting = startService(new Intent(WifiBTS.this, CIDwifiService.class));
         	if(starting == null){
@@ -102,92 +76,14 @@ public class WifiBTS extends Activity {
         case R.id.StopService:
         	boolean stopping = 	stopService(new Intent(WifiBTS.this, CIDwifiService.class));
         	if(stopping){
-        		tv.append("Service stoped.\n");
+        		tv.append("Service stopping...\n");
         	}        	
             return true;
-        case R.id.save:
-        	SaveCIDdb();
-            return true;
+        
         default:
             return super.onOptionsItemSelected(item);
         }
     }
-    
-    private void WifiToggle(){
-    	if(wifiMgr.getWifiState() == WifiManager.WIFI_STATE_ENABLED){
-        	tv.append("Wifi is enabled. Disabling...");
-        	wifiMgr.setWifiEnabled(false);
-        	tv.append(" OK\n");
-        }
-    	else if(wifiMgr.getWifiState() == WifiManager.WIFI_STATE_DISABLED){
-    		tv.append("Wifi is disabled. Enabling...");
-        	wifiMgr.setWifiEnabled(true);
-        	tv.append(" OK\n");
-    	}
-    }
-    
-    private void RefreshLACCID(){
-    	   	
-    	tv.append("Current CID: "+current_cid+"\n");
-    	WifiInfo winfo = wifiMgr.getConnectionInfo();
-    	//Main logic
-    	//jesli wifi jest wyłączone
-    	if(current_cid != -1){
-	    	if(!wifiMgr.isWifiEnabled()){
-	    		if(CIDdb.isCIDhere(current_cid)){
-	    			wifiMgr.setWifiEnabled(true);
-	    		}
-	    	}
-	    	else{
-	    		if(!CIDdb.isCIDhere(current_cid)){
-	    			if(winfo.getNetworkId() != -1){
-	    				CIDdb.addCID(current_cid);
-	    			}
-	    			else{
-	    				wifiMgr.setWifiEnabled(false);
-	    			}
-	    		}    		
-	    	}
-    	}
-    		//jesli CID jest bazie to włączyć wifi
-    		//jesli CIDa nie ma w bazie to w sumie nic
-    	
-    	//jesli wifi jest włączone
-    		//jesli CID jest w bazie, jest to dobrze, cyzli nic nie robic
-    		//jesli CIDA nie ma w bazie
-    			//jesli jestesmy podłączeni do jakiejs sieci, zapisać CID do bazy
-    			//jesli nie jesteśmy podłączeni do żadnej sieci, czyli wifi w trybie scan, to nalezy wifi wyłączyć tutaj ___
-    	
-    	//+logica jak traci zasięg (winda)
-    	
-    }
-    
-    private void SaveCIDdb(){
-    	try {
-			fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-			ofos = new ObjectOutputStream(fos);
-			ofos.writeObject(CIDdb);
-			ofos.close();
-			fos.close();
-			tv.append("DB saved with "+CIDdb.getNumberOfCIDs()+" known CIDs\n");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
-    /*
-    @Override
-    protected void onPause(){
-    	tv.append("Program paused by Android.\n");
-    	//SaveCIDdb();
-    }
-    
-    @Override
-    protected void onResume(){
-    	tv.append("Program resumed by Android.\n");
-    	//OpenCIDdb();
-    }
-    */
     
     @Override
     protected void onDestroy() {

@@ -17,8 +17,8 @@ import android.widget.TextView;
 
 public class WifiBTS extends Activity {
 	
-	public static final String NEW_MSG_TO_GUI = "com.gregory.Intents.MESSAGE_TO_GUI";
-	public static final String NEW_MSG_TO_SERVICE = "com.gregory.Intents.MESSAGE_TO_SERVICE";
+	public static final String NEW_MSG_TO_GUI = "com.polandro.Intents.MESSAGE_TO_GUI";
+	public static final String NEW_MSG_TO_SERVICE = "com.polandro.Intents.MESSAGE_TO_SERVICE";
 	private TextView tv;	
 	private SampleReceiver myReceiver;
 	
@@ -69,13 +69,19 @@ public class WifiBTS extends Activity {
         	ComponentName starting = startService(new Intent(WifiBTS.this, CIDwifiService.class));
         	if(starting == null){
         		tv.append("Service started.\n");
-        	}        	
+        	}
+        	else{
+        		tv.append("Service already started.\n");
+        	}
             return true;
         case R.id.StopService:
         	boolean stopping = 	stopService(new Intent(WifiBTS.this, CIDwifiService.class));
         	if(stopping){
         		tv.append("Service stopping...\n");
-        	}        	
+        	}
+        	else{
+        		tv.append("Service already stopped.\n");
+        	}
             return true;
         
         default:

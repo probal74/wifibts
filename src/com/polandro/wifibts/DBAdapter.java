@@ -16,7 +16,7 @@ public class DBAdapter {
 	private static final String DATABASE_TABLE = "cids";
 	private static final int DATABASE_VERSION = 1;
 
-	private static final String DATABASE_CREATE = "create table cids (_id integer primary key autoincrement, cid text not null, ssid text not null);";
+	private static final String DATABASE_CREATE = "create table cids (_id integer primary key autoincrement, cid integer not null, ssid text not null);";
 
 	private final Context context;
 
@@ -57,7 +57,7 @@ public class DBAdapter {
 	}
 
 	// ---inserts a cid into the database---
-	public long insertCID(String cid, String ssid) {
+	public long addCID(int cid, String ssid) {
 		ContentValues initialValues = new ContentValues();
 		initialValues.put(KEY_CID, cid);
 		initialValues.put(KEY_SSID, ssid);
@@ -74,9 +74,9 @@ public class DBAdapter {
         return db.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_CID, KEY_SSID}, KEY_SSID + "=" + ssid, null, null, null, null);
     }
     
-    //---checks if cid is already assigned to the ssid
-    public boolean checkCID(String cid, String ssid){
-    	if (db.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_CID, KEY_SSID}, KEY_CID + "=" + cid + " and " + KEY_SSID + "=" + cid, null, null, null, null).getCount() > 0)
+    //---checks if cid is already
+    public boolean checkCID(int cid){
+    	if (db.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_CID, KEY_SSID}, KEY_CID + "=" + cid, null, null, null, null).getCount() > 0)
     		return true;
     	else
     		return false;

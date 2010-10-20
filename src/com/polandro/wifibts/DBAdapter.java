@@ -74,7 +74,7 @@ public class DBAdapter {
         return db.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_CID, KEY_SSID}, KEY_SSID + "=" + ssid, null, null, null, null);
     }
     
-    //---checks if cid is already
+    //---checks if cid is already in db---
     public boolean checkCID(int cid){
     	if (db.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_CID, KEY_SSID}, KEY_CID + "=" + cid, null, null, null, null).getCount() > 0)
     		return true;

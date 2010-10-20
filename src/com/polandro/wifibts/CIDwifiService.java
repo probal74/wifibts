@@ -1,9 +1,5 @@
 package com.polandro.wifibts;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,11 +20,6 @@ public class CIDwifiService extends Service {
 	private PhoneStateListener listener;
 	private GsmCellLocation GCL;
 	private DBAdapter wifiBTSdb;
-	private String FILENAME = "cidloc.db";
-	private FileInputStream fis;
-	private ObjectInputStream ofis;
-	private FileOutputStream fos;
-	private ObjectOutputStream ofos;
 	private int current_cid;
 	private String current_ssid;
 	private SampleReceiver myReceiver;
@@ -67,11 +58,9 @@ public class CIDwifiService extends Service {
 		listener = new PhoneStateListener() {
             @Override
             public void onCellLocationChanged(CellLocation location) {            
-            	//RefreshLACCID();
             	GCL = (GsmCellLocation)telMgr.getCellLocation(); 
             	current_cid = GCL.getCid();
             	RefreshLACCID();
-  /*          	SaveCIDdb();*/
             }              
         };
         // Register the listener wit the telephony manager
@@ -79,8 +68,7 @@ public class CIDwifiService extends Service {
 	}
 	
 	private void showDataFromIntent(Intent intent) {
-        String msg = intent.getStringExtra("ToService");
-        
+        	String msg = intent.getStringExtra("ToService");        
         	sendMSGtoGUI("Service already running.\n");
        
         
@@ -95,33 +83,7 @@ public class CIDwifiService extends Service {
 	private void OpenCIDdb(){
 		wifiBTSdb = new DBAdapter(this);
 		wifiBTSdb.open();
-/*    	try {
-    		fis = openFileInput(FILENAME);
-			ofis = new ObjectInputStream(fis);
-			Object obj = ofis.readObject();
-			if(obj instanceof CIDLocation){
-				CIDdb = (CIDLocation)obj;
-				sendMSGtoGUI("Loaded DB. "+CIDdb.getNumberOfCIDs()+" known CIDs \n");
-			}
-		} catch (Exception e) {
-			sendMSGtoGUI("No file found. Creating new DB\n");
-			CIDdb = new CIDLocation();				
-		}*/
     }
-	
-/*	private void SaveCIDdb(){
-    	try {
-			fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
-			ofos = new ObjectOutputStream(fos);
-			ofos.writeObject(CIDdb);
-			ofos.close();
-			fos.close();
-			sendMSGtoGUI("DB saved with "+CIDdb.getNumberOfCIDs()+" known CIDs\n");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }*/
 	
 	private void RefreshLACCID(){
 	   	
@@ -129,7 +91,6 @@ public class CIDwifiService extends Service {
     	WifiInfo winfo = wifiMgr.getConnectionInfo();
     	current_ssid = winfo.getSSID();
     	sendMSGtoGUI("Current SSID: "+current_ssid+"\n");
-    	
     	
     	if(current_cid != -1){
 	    	if(!wifiMgr.isWifiEnabled()){
@@ -153,9 +114,8 @@ public class CIDwifiService extends Service {
 	
 	@Override
 	public void onDestroy() {
-		sendMSGtoGUI("Service stopped.\n");
-		wifiBTSdb.close();
-/*		SaveCIDdb();*/    
+		wifiBTSdb.close(); 
+		sendMSGtoGUI("Service stopped.\n"); 
 	    super.onDestroy();
 	}
 

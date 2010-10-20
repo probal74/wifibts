@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
@@ -69,28 +70,34 @@ public class CIDwifiService extends Service {
 	
 	private void showDataFromIntent(Intent intent) {
         	String msg = intent.getStringExtra("ToService");        
-        	sendMSGtoGUI("Service already running.\n");
-       
-        
+        	sendMSGtoGUI("Service already running.\n");        
     }
 	
-	private void sendMSGtoGUI(String msg){
+	private void sendMSGtoGUI(String msg) {
 		Intent intent = new Intent(NEW_MSG_TO_GUI);  
     	intent.putExtra("ToGUI",msg);
     	sendBroadcast(intent);
 	}
 	
-	private void OpenCIDdb(){
+	private void OpenCIDdb() {
 		wifiBTSdb = new DBAdapter(this);
 		wifiBTSdb.open();
     }
 	
-	private void RefreshLACCID(){
-	   	
+	private void RefreshLACCID() {
 		sendMSGtoGUI("Current CID: "+current_cid+"\n");		
     	WifiInfo winfo = wifiMgr.getConnectionInfo();
     	current_ssid = winfo.getSSID();
-    	sendMSGtoGUI("Current SSID: "+current_ssid+"\n");
+    	sendMSGtoGUI("Current SSID: "+current_ssid+"\nRecorded CIDs:\n");
+    	
+        Cursor c = wifiBTSdb.getAllCIDs(current_ssid);
+        if (c.moveToFirst())
+        {
+            do {          
+            	sendMSGtoGUI(c.getString(1)+",");
+            } while (c.moveToNext());
+        }
+    	
     	
     	if(current_cid != -1){
 	    	if(!wifiMgr.isWifiEnabled()){

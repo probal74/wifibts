@@ -71,7 +71,7 @@ public class DBAdapter {
 	
     //---retrieves all cids for one ssid---
     public Cursor getAllCIDs(String ssid) {
-        return db.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_CID, KEY_SSID}, KEY_SSID + "=" + ssid, null, null, null, null);
+        return db.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_CID, KEY_SSID}, KEY_SSID + "='" + ssid + "'", null, null, null, null);
     }
     
     //---checks if cid is already in db---

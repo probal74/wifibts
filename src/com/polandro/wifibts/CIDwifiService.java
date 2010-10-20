@@ -59,9 +59,11 @@ public class CIDwifiService extends Service {
 		listener = new PhoneStateListener() {
             @Override
             public void onCellLocationChanged(CellLocation location) {            
-            	GCL = (GsmCellLocation)telMgr.getCellLocation(); 
-            	current_cid = GCL.getCid();
-            	RefreshLACCID();
+            	GCL = (GsmCellLocation)telMgr.getCellLocation();
+            	if(GCL != null){
+            		current_cid = GCL.getCid();
+            		RefreshLACCID();
+            	}
             }              
         };
         // Register the listener wit the telephony manager

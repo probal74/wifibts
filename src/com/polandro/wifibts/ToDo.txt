@@ -1,0 +1,4 @@
+ToDo list:
+
+associate CID in the DB with the SSID
+starting wifi by hand should restart service

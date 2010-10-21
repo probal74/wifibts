@@ -104,7 +104,6 @@ public class CIDwifiService extends Service {
 	    	WifiInfo winfo = wifiMgr.getConnectionInfo();
 	    	current_ssid = winfo.getSSID();
 	    	
-	    	sendMSGtoGUI("Current SSID: "+current_ssid+"\nRecorded CIDs:\n");
 	    	wifiBTSdb.log(System.currentTimeMillis(),current_ssid);
 	    	
 	        Cursor c = wifiBTSdb.getLog();

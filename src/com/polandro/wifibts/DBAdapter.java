@@ -17,7 +17,7 @@ public class DBAdapter {
 	private static final String DATABASE_NAME = "wifibts";
 	private static final String DATABASE_TABLE = "cids";
 	private static final String DATABASE_TABLE_LOG = "log";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 3;
 
 	private static final String DATABASE_CREATE_CIDS = "create table cids (_id integer primary key autoincrement, cid integer not null, ssid text not null);";
 	private static final String DATABASE_CREATE_LOG = "create table log (date integer, text text);";

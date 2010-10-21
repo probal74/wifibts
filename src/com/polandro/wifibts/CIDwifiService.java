@@ -26,8 +26,6 @@ public class CIDwifiService extends Service {
 	private int current_cid;
 	private String current_ssid;
 	private SampleReceiver myReceiver;
-	public static final String NEW_MSG_TO_GUI = "com.polandro.Intents.MESSAGE_TO_GUI";
-	public static final String NEW_MSG_TO_SERVICE = "com.polandro.Intents.MESSAGE_TO_SERVICE";
 	
 	private class SampleReceiver extends BroadcastReceiver {
 	    @Override
@@ -60,7 +58,8 @@ public class CIDwifiService extends Service {
 		}
 		
 		myReceiver = new SampleReceiver();
-        IntentFilter filter = new IntentFilter(NEW_MSG_TO_SERVICE);
+        //IntentFilter filter = new IntentFilter(NEW_MSG_TO_SERVICE);
+		IntentFilter filter = new IntentFilter(WifiBTS.NEW_MSG_TO_SERVICE);
         registerReceiver(myReceiver, filter);
 		
 		listener = new PhoneStateListener() {
@@ -77,13 +76,20 @@ public class CIDwifiService extends Service {
         telMgr.listen(listener, PhoneStateListener.LISTEN_CELL_LOCATION);
 	}
 	
-	private void showDataFromIntent(Intent intent) {
-        	//String msg = intent.getStringExtra("ToService");        
-        	sendMSGtoGUI("Service already running.\n");        
+	private void showDataFromIntent(Intent intent) { //request parser
+        	//String msg = intent.getStringExtra("ToService");
+			int order = intent.getIntExtra("ToService", -1);
+			if(order == WifiBTS.PING){
+				sendMSGtoGUI("Service already running.\n"); 
+			}
+			else if(order == WifiBTS.START_WIFI){
+				
+			}
     }
 	
 	private void sendMSGtoGUI(String msg) {
-		Intent intent = new Intent(NEW_MSG_TO_GUI);  
+		//Intent intent = new Intent(NEW_MSG_TO_GUI);
+		Intent intent = new Intent(WifiBTS.NEW_MSG_TO_GUI);
     	intent.putExtra("ToGUI",msg);
     	sendBroadcast(intent);
 	}
@@ -116,9 +122,7 @@ public class CIDwifiService extends Service {
 	        }
 	    	
 	    	//<LOGIC>
-	    	if(current_cid != -1 
-	    			&& wifiMgr.getWifiState() != WifiManager.WIFI_STATE_ENABLING
-	    			&& wifiMgr.getWifiState() != WifiManager.WIFI_STATE_DISABLING){
+	    	if(current_cid != -1 ){
 		    	if(!wifiMgr.isWifiEnabled()){
 		    		if(wifiBTSdb.checkCID(current_cid)){
 		    			wifiMgr.setWifiEnabled(true);

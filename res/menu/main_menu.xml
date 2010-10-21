@@ -6,4 +6,5 @@
 
 <item android:menuCategory="container" android:id="@+id/StartService" android:enabled="true" android:title="Start Service" android:visible="true"></item>
 <item android:menuCategory="container" android:id="@+id/StopService" android:enabled="true" android:title="Stop Service" android:visible="true"></item>
+<item android:id="@+id/StartWifi" android:title="Start wifi radio"></item>
 </menu>

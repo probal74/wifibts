@@ -19,6 +19,8 @@ public class WifiBTS extends Activity {
 	
 	public static final String NEW_MSG_TO_GUI = "com.polandro.Intents.MESSAGE_TO_GUI";
 	public static final String NEW_MSG_TO_SERVICE = "com.polandro.Intents.MESSAGE_TO_SERVICE";
+	public static final int START_WIFI = 1;
+	public static final int PING = 2;
 	private TextView tv;	
 	private SampleReceiver myReceiver;
 	
@@ -39,10 +41,10 @@ public class WifiBTS extends Activity {
         registerReceiver(myReceiver, filter);               
         setContentView(tv);
         tv.append("Herzlich wilkommen :)\n");
-        sendMSGtoService("PING");
+        sendMSGtoService(START_WIFI);
     }
     
-    private void sendMSGtoService(String msg){
+    private void sendMSGtoService(int msg){
 		Intent intent = new Intent(NEW_MSG_TO_SERVICE);  
     	intent.putExtra("ToService",msg);
     	sendBroadcast(intent);
@@ -83,6 +85,8 @@ public class WifiBTS extends Activity {
         		tv.append("Service already stopped.\n");
         	}
             return true;
+        case R.id.StartWifi:
+        	sendMSGtoService(WifiBTS.START_WIFI);
         
         default:
             return super.onOptionsItemSelected(item);

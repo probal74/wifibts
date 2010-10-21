@@ -92,7 +92,7 @@ public class CIDwifiService extends Service {
 	private void startWifiManually(){
 		wifiStartTime.setTime(System.currentTimeMillis());
 		wifiMgr.setWifiEnabled(true);
-		sendMSGtoGUI("Starting wifi.\n");		
+		wifiBTSdb.log(System.currentTimeMillis(), "wifi enabled manually");
 	}
 	
 	private void sendMSGtoGUI(String msg) {

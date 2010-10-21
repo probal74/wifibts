@@ -26,6 +26,8 @@ public class CIDwifiService extends Service {
 	private int current_cid;
 	private String current_ssid;
 	private SampleReceiver myReceiver;
+	private Timestamp wifiStartTime;
+	private int WIFI_DELAY = 10000; //10s
 	
 	private class SampleReceiver extends BroadcastReceiver {
 	    @Override
@@ -49,6 +51,7 @@ public class CIDwifiService extends Service {
 	
 	private void startservice() {
 		OpenCIDdb();
+		wifiStartTime = new Timestamp(0);
 		wifiMgr = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 		telMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 		if(wifiMgr == null || telMgr == null){
@@ -58,7 +61,6 @@ public class CIDwifiService extends Service {
 		}
 		
 		myReceiver = new SampleReceiver();
-        //IntentFilter filter = new IntentFilter(NEW_MSG_TO_SERVICE);
 		IntentFilter filter = new IntentFilter(WifiBTS.NEW_MSG_TO_SERVICE);
         registerReceiver(myReceiver, filter);
 		
@@ -77,18 +79,23 @@ public class CIDwifiService extends Service {
 	}
 	
 	private void showDataFromIntent(Intent intent) { //request parser
-        	//String msg = intent.getStringExtra("ToService");
+        	
 			int order = intent.getIntExtra("ToService", -1);
 			if(order == WifiBTS.PING){
 				sendMSGtoGUI("Service already running.\n"); 
 			}
 			else if(order == WifiBTS.START_WIFI){
-				
+				startWifiManually();
 			}
     }
 	
+	private void startWifiManually(){
+		wifiStartTime.setTime(System.currentTimeMillis());
+		wifiMgr.setWifiEnabled(true);
+		sendMSGtoGUI("Starting wifi.\n");		
+	}
+	
 	private void sendMSGtoGUI(String msg) {
-		//Intent intent = new Intent(NEW_MSG_TO_GUI);
 		Intent intent = new Intent(WifiBTS.NEW_MSG_TO_GUI);
     	intent.putExtra("ToGUI",msg);
     	sendBroadcast(intent);
@@ -121,8 +128,10 @@ public class CIDwifiService extends Service {
 	            sendMSGtoGUI("\n");
 	        }
 	    	
+	        Timestamp current_time = new Timestamp(System.currentTimeMillis());
 	    	//<LOGIC>
-	    	if(current_cid != -1 ){
+	    	if(current_cid != -1 &&
+	    			current_time.getTime() - wifiStartTime.getTime() > WIFI_DELAY){
 		    	if(!wifiMgr.isWifiEnabled()){
 		    		if(wifiBTSdb.checkCID(current_cid)){
 		    			wifiMgr.setWifiEnabled(true);

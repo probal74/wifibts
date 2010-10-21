@@ -86,8 +86,7 @@ public class WifiBTS extends Activity {
         	}
             return true;
         case R.id.StartWifi:
-        	sendMSGtoService(WifiBTS.START_WIFI);
-        
+        	sendMSGtoService(WifiBTS.START_WIFI);        
         default:
             return super.onOptionsItemSelected(item);
         }

@@ -112,12 +112,9 @@ public class CIDwifiService extends Service {
     }
 	
 	private void RefreshLACCID() {
-		sendMSGtoGUI("Current CID: "+current_cid+"\n");
 		try{
 	    	WifiInfo winfo = wifiMgr.getConnectionInfo();
 	    	current_ssid = winfo.getSSID();
-	    	
-	    	wifiBTSdb.log(System.currentTimeMillis(),current_ssid);
 	    	
 	        Cursor c = wifiBTSdb.getLog();
 	        if (c.moveToFirst())
@@ -125,7 +122,6 @@ public class CIDwifiService extends Service {
 	            do {          
 	            	sendMSGtoGUI((new Timestamp(c.getLong(0))).toLocaleString()+" "+c.getString(1)+"\n");
 	            } while (c.moveToNext());
-	            sendMSGtoGUI("\n");
 	        }
 	    	
 	        Timestamp current_time = new Timestamp(System.currentTimeMillis());
@@ -135,6 +131,7 @@ public class CIDwifiService extends Service {
 		    	if(!wifiMgr.isWifiEnabled()){
 		    		if(wifiBTSdb.checkCID(current_cid)){
 		    			wifiMgr.setWifiEnabled(true);
+		    			wifiBTSdb.log(System.currentTimeMillis(), "wifi enabled");
 		    		}
 		    	}
 		    	else{
@@ -144,6 +141,7 @@ public class CIDwifiService extends Service {
 		    			}
 		    			else{
 		    				wifiMgr.setWifiEnabled(false);
+		    				wifiBTSdb.log(System.currentTimeMillis(), "wifi disabled");
 		    			}
 		    		}    		
 		    	}

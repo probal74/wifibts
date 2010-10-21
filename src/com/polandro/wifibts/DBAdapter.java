@@ -11,13 +11,17 @@ public class DBAdapter {
 	public static final String KEY_ROWID = "_id";
 	public static final String KEY_CID = "cid";
 	public static final String KEY_SSID = "ssid";
+	public static final String KEY_DATE = "date";
+	public static final String KEY_LOG = "text";
 
 	private static final String DATABASE_NAME = "wifibts";
 	private static final String DATABASE_TABLE = "cids";
+	private static final String DATABASE_TABLE_LOG = "log";
 	private static final int DATABASE_VERSION = 1;
 
-	private static final String DATABASE_CREATE = "create table cids (_id integer primary key autoincrement, cid integer not null, ssid text not null);";
-
+	private static final String DATABASE_CREATE_CIDS = "create table cids (_id integer primary key autoincrement, cid integer not null, ssid text not null);";
+	private static final String DATABASE_CREATE_LOG = "create table log (date integer, text text);";
+	
 	private final Context context;
 
 	private DatabaseHelper DBHelper;
@@ -46,12 +50,14 @@ public class DBAdapter {
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL(DATABASE_CREATE);
+			db.execSQL(DATABASE_CREATE_CIDS);
+			db.execSQL(DATABASE_CREATE_LOG);
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			db.execSQL("DROP TABLE IF EXISTS cids");
+			db.execSQL("DROP TABLE IF EXISTS log");
 			onCreate(db);
 		}
 	}
@@ -81,4 +87,14 @@ public class DBAdapter {
     	else
     		return false;
     }    
+    public long log(long date, String text) {
+    	ContentValues initialValues = new ContentValues();
+		initialValues.put(KEY_DATE, date);
+		initialValues.put(KEY_LOG, text);
+		return db.insert(DATABASE_TABLE_LOG, null, initialValues);    
+    }
+    
+    public Cursor getLog() {
+        return db.query(DATABASE_TABLE_LOG, new String[] {KEY_DATE, KEY_LOG}, null, null, null, null, null);
+    }
 }

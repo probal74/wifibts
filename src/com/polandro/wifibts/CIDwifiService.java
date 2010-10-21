@@ -14,6 +14,7 @@ import android.telephony.CellLocation;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
+import java.sql.Timestamp;
 
 public class CIDwifiService extends Service {
 
@@ -104,12 +105,13 @@ public class CIDwifiService extends Service {
 	    	current_ssid = winfo.getSSID();
 	    	
 	    	sendMSGtoGUI("Current SSID: "+current_ssid+"\nRecorded CIDs:\n");
+	    	wifiBTSdb.log(System.currentTimeMillis(),current_ssid);
 	    	
-	        Cursor c = wifiBTSdb.getAllCIDs(current_ssid);
+	        Cursor c = wifiBTSdb.getLog();
 	        if (c.moveToFirst())
 	        {
 	            do {          
-	            	sendMSGtoGUI(c.getString(1)+",");
+	            	sendMSGtoGUI((new Timestamp(c.getLong(0))).toLocaleString()+" "+c.getString(1)+"\n");
 	            } while (c.moveToNext());
 	            sendMSGtoGUI("\n");
 	        }

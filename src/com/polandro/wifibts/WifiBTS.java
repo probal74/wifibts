@@ -41,7 +41,7 @@ public class WifiBTS extends Activity {
         registerReceiver(myReceiver, filter);               
         setContentView(tv);
         tv.append("Herzlich wilkommen :)\n");
-        sendMSGtoService(START_WIFI);
+        sendMSGtoService(PING);
     }
     
     private void sendMSGtoService(int msg){

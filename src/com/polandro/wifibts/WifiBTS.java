@@ -69,11 +69,8 @@ public class WifiBTS extends Activity {
                 
         case R.id.StartService:
         	ComponentName starting = startService(new Intent(WifiBTS.this, CIDwifiService.class));
-        	if(starting == null){
-        		tv.append("Service started.\n");
-        	}
-        	else{
-        		tv.append("Service already started.\n");
+        	if(starting != null){
+        		tv.append("Service up&running\n");
         	}
             return true;
         case R.id.StopService:

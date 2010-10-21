@@ -54,7 +54,7 @@ public class CIDwifiService extends Service {
 		telMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
 		if(wifiMgr == null || telMgr == null){
 			//android fuckup
-			sendMSGtoGUI("Cannot access hardware.\n");
+			sendMSGtoGUI("Cannot access hardware :(\n");
 			this.onDestroy();
 		}
 		
@@ -102,6 +102,7 @@ public class CIDwifiService extends Service {
 		try{
 	    	WifiInfo winfo = wifiMgr.getConnectionInfo();
 	    	current_ssid = winfo.getSSID();
+	    	
 	    	sendMSGtoGUI("Current SSID: "+current_ssid+"\nRecorded CIDs:\n");
 	    	
 	        Cursor c = wifiBTSdb.getAllCIDs(current_ssid);
@@ -114,7 +115,9 @@ public class CIDwifiService extends Service {
 	        }
 	    	
 	    	//<LOGIC>
-	    	if(current_cid != -1){
+	    	if(current_cid != -1 
+	    			&& wifiMgr.getWifiState() != WifiManager.WIFI_STATE_ENABLING
+	    			&& wifiMgr.getWifiState() != WifiManager.WIFI_STATE_DISABLING){
 		    	if(!wifiMgr.isWifiEnabled()){
 		    		if(wifiBTSdb.checkCID(current_cid)){
 		    			wifiMgr.setWifiEnabled(true);

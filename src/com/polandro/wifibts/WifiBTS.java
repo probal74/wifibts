@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,13 +38,19 @@ public class WifiBTS extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tv = new TextView(this);
+        setContentView(R.layout.main);
+        tv = (TextView)findViewById(R.id.footer);
         myReceiver = new SampleReceiver();
         IntentFilter filter = new IntentFilter(NEW_MSG_TO_GUI);
         registerReceiver(myReceiver, filter);               
-        setContentView(tv);
+        
         tv.append("Herzlich wilkommen :)\n");
         sendMSGtoService(PING);
+        
+        ListView list = (ListView)findViewById(R.id.list);
+        String[] listitems = new String[] {"A", "B", "C"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.listitem, listitems);
+        list.setAdapter(adapter);
     }
     
     private void sendMSGtoService(int msg){

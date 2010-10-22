@@ -95,6 +95,6 @@ public class DBAdapter {
     }
     
     public Cursor getLog() {
-        return db.query(DATABASE_TABLE_LOG, new String[] {KEY_DATE, KEY_LOG}, null, null, null, null, KEY_DATE, "10");
+        return db.query(DATABASE_TABLE_LOG, new String[] {KEY_DATE, KEY_LOG}, null, null, null, null, KEY_DATE + " desc", "20");
     }
 }

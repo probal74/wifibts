@@ -14,6 +14,8 @@ import android.telephony.CellLocation;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
+import android.widget.Toast;
+
 import java.sql.Timestamp;
 
 public class CIDwifiService extends Service {
@@ -51,11 +53,12 @@ public class CIDwifiService extends Service {
 		IntentFilter filter = new IntentFilter(WifiBTS.NEW_MSG_TO_SERVICE);
         registerReceiver(myReceiver, filter);
 		
-		openDB();																		//Open SQLite database
+																				//Open SQLite database
 		serviceStartTime = new Timestamp(0);											//Time when the service was started
 		wifiMgr = (WifiManager)getSystemService(Context.WIFI_SERVICE);					//wifiMgr - connect to the system wifi service
 		telMgr = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);			//telMgr - connect to the system telephony service
 		if(wifiMgr == null || telMgr == null) {
+			openDB();
 			wifiBTSdb.log(System.currentTimeMillis(), "Cannot access hardware");
 			this.onDestroy();
 		}
@@ -85,7 +88,10 @@ public class CIDwifiService extends Service {
 	private void startWifiManually() {
 		serviceStartTime.setTime(System.currentTimeMillis());
 		wifiMgr.setWifiEnabled(true);
+		openDB();
 		wifiBTSdb.log(System.currentTimeMillis(), "wifi enabled manually");
+		Toast.makeText(this, "wifi enabled manually", Toast.LENGTH_LONG).show();
+		closeDB();
 	}
 	
 	private void sendMSGtoGUI(String msg) {
@@ -109,6 +115,7 @@ public class CIDwifiService extends Service {
 	    	WifiInfo winfo = wifiMgr.getConnectionInfo();
 	    	current_ssid = winfo.getSSID();
 	    	
+	    	openDB();
 	        Cursor c = wifiBTSdb.getLog();
 	        if (c.moveToFirst())
 	        {
@@ -124,6 +131,7 @@ public class CIDwifiService extends Service {
 		    		if(wifiBTSdb.checkCID(current_cid)){
 		    			wifiMgr.setWifiEnabled(true);
 		    			wifiBTSdb.log(System.currentTimeMillis(), "wifi enabled");
+		    			Toast.makeText(this, "wifi enabled", Toast.LENGTH_LONG).show();
 		    		}
 		    	}
 		    	else{
@@ -134,16 +142,27 @@ public class CIDwifiService extends Service {
 		    			else{
 		    				wifiMgr.setWifiEnabled(false);
 		    				wifiBTSdb.log(System.currentTimeMillis(), "wifi disabled");
+		    				Toast.makeText(this, "wifi disabled", Toast.LENGTH_LONG).show();
 		    			}
 		    		}    		
 		    	}
 	    	}
+	    	closeDB();
 		}
 		catch(Exception e){
 			sendMSGtoGUI(e.getMessage());
 		}
     	
     }
+
+	private void closeDB() {
+		try {
+			wifiBTSdb.close();
+		}
+		catch (SQLiteException e) {
+			sendMSGtoGUI("DB exception!!!"); 
+		}	
+	}
 	
 	@Override
 	public void onDestroy() {

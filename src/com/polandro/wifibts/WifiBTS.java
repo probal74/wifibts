@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class WifiBTS extends Activity {
 	
@@ -71,6 +72,7 @@ public class WifiBTS extends Activity {
         	ComponentName starting = startService(new Intent(WifiBTS.this, CIDwifiService.class));
         	if(starting != null){
         		tv.append("Service up&running\n");
+        		Toast.makeText(this, "Service up&running", Toast.LENGTH_LONG).show();
         	}
             return true;
         case R.id.StopService:

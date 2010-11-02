@@ -54,7 +54,7 @@ public class CIDwifiService extends Service {
 	
 	private void startservice() {
 		myReceiver = new SampleReceiver();												//Register receiver for messages from GUI
-		IntentFilter filter = new IntentFilter(WifiBTS.NEW_MSG_TO_SERVICE);
+		IntentFilter filter = new IntentFilter(WifiBTSTab.NEW_MSG_TO_SERVICE);
         registerReceiver(myReceiver, filter);
 		
 																				//Open SQLite database
@@ -81,10 +81,10 @@ public class CIDwifiService extends Service {
 	
 	private void showDataFromIntent(Intent intent) { //request parser        	
 			int order = intent.getIntExtra("ToService", -1);
-			if(order == WifiBTS.PING){
+			if(order == WifiBTSTab.PING){
 				sendMSGtoGUI("Service already running.\n"); 
 			}
-			else if(order == WifiBTS.START_WIFI){
+			else if(order == WifiBTSTab.START_WIFI){
 				startWifiManually();
 			}
     }
@@ -99,7 +99,7 @@ public class CIDwifiService extends Service {
 	}
 	
 	private void sendMSGtoGUI(String msg) {
-		Intent intent = new Intent(WifiBTS.NEW_MSG_TO_GUI);
+		Intent intent = new Intent(WifiBTSTab.NEW_MSG_TO_GUI);
     	intent.putExtra("ToGUI",msg);
     	sendBroadcast(intent);
 	}

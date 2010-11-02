@@ -1,5 +1,8 @@
 package com.polandro.wifibts;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,11 +17,10 @@ import android.telephony.CellLocation;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
-import android.widget.Toast;
 
 import java.sql.Timestamp;
 
-public class CIDwifiService extends Service {
+public class CIDwifiService extends Service {	
 	private TelephonyManager telMgr;
 	private WifiManager wifiMgr;
 	private PhoneStateListener listener;
@@ -29,6 +31,8 @@ public class CIDwifiService extends Service {
 	private SampleReceiver myReceiver;
 	private Timestamp serviceStartTime;
 	private int WIFI_DELAY = 10000; //10s
+	private final int NOTIFICATION_ID = 1010;
+
 	
 	private class SampleReceiver extends BroadcastReceiver {
 	    @Override
@@ -90,7 +94,7 @@ public class CIDwifiService extends Service {
 		wifiMgr.setWifiEnabled(true);
 		openDB();
 		wifiBTSdb.log(System.currentTimeMillis(), "wifi enabled manually");
-		Toast.makeText(this, "wifi enabled manually", Toast.LENGTH_LONG).show();
+		triggerNotification("WifiBTS", "wifi enabled manually");
 		closeDB();
 	}
 	
@@ -131,7 +135,7 @@ public class CIDwifiService extends Service {
 		    		if(wifiBTSdb.checkCID(current_cid)){
 		    			wifiMgr.setWifiEnabled(true);
 		    			wifiBTSdb.log(System.currentTimeMillis(), "wifi enabled");
-		    			Toast.makeText(this, "wifi enabled", Toast.LENGTH_LONG).show();
+		    			triggerNotification("WifiBTS", "wifi enabled");		    			
 		    		}
 		    	}
 		    	else{
@@ -141,8 +145,8 @@ public class CIDwifiService extends Service {
 		    			}
 		    			else{
 		    				wifiMgr.setWifiEnabled(false);
-		    				wifiBTSdb.log(System.currentTimeMillis(), "wifi disabled");
-		    				Toast.makeText(this, "wifi disabled", Toast.LENGTH_LONG).show();
+		    				wifiBTSdb.log(System.currentTimeMillis(), "wifi disabled");		    				
+		    				triggerNotification("WifiBTS", "wifi dienabled");
 		    			}
 		    		}    		
 		    	}
@@ -175,5 +179,19 @@ public class CIDwifiService extends Service {
 		sendMSGtoGUI("Service stopped.\n"); 
 	    super.onDestroy();
 	}
-
+	
+	private void triggerNotification(String Title, String Message)
+    {
+        CharSequence title = Title;
+        CharSequence message = Message;
+ 
+        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        Notification notification = new Notification(R.drawable.icon, "New wifi event", System.currentTimeMillis());
+ 
+        Intent notificationIntent = new Intent(this, CIDwifiService.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+ 
+        notification.setLatestEventInfo(CIDwifiService.this, title, message, pendingIntent);
+        notificationManager.notify(NOTIFICATION_ID, notification);
+    }
 }

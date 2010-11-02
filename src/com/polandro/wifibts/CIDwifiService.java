@@ -129,13 +129,15 @@ public class CIDwifiService extends Service {
 	        }
 	    	
 	        Timestamp current_time = new Timestamp(System.currentTimeMillis());
+	        String Time = current_time.getHours()+":"+current_time.getMinutes()+":"+current_time.getSeconds()+" "
+	        +current_time.getYear()+"-"+current_time.getMonth()+"-"+current_time.getDay();	
 	    	if(current_cid != -1 &&
 	    			current_time.getTime() - serviceStartTime.getTime() > WIFI_DELAY){
 		    	if(!wifiMgr.isWifiEnabled()){
 		    		if(wifiBTSdb.checkCID(current_cid)){
 		    			wifiMgr.setWifiEnabled(true);
 		    			wifiBTSdb.log(System.currentTimeMillis(), "wifi enabled");
-		    			triggerNotification("WifiBTS", "wifi enabled");		    			
+		    			triggerNotification("WifiBTS", "wifi enabled@ "+Time);		    			
 		    		}
 		    	}
 		    	else{
@@ -146,7 +148,7 @@ public class CIDwifiService extends Service {
 		    			else{
 		    				wifiMgr.setWifiEnabled(false);
 		    				wifiBTSdb.log(System.currentTimeMillis(), "wifi disabled");		    				
-		    				triggerNotification("WifiBTS", "wifi dienabled");
+		    				triggerNotification("WifiBTS", "wifi dienabled@ "+Time);
 		    			}
 		    		}    		
 		    	}

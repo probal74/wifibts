@@ -120,13 +120,13 @@ public class CIDwifiService extends Service {
 	    	current_ssid = winfo.getSSID();
 	    	
 	    	openDB();
-	        Cursor c = wifiBTSdb.getLog();
+	        /*Cursor c = wifiBTSdb.getLog();
 	        if (c.moveToFirst())
 	        {
 	            do {          
 	            	sendMSGtoGUI((new Timestamp(c.getLong(0))).toLocaleString()+" "+c.getString(1)+"\n");
 	            } while (c.moveToNext());
-	        }
+	        }*/
 	    	
 	        Timestamp current_time = new Timestamp(System.currentTimeMillis());
 	        String Time = current_time.getHours()+":"+current_time.getMinutes()+":"+current_time.getSeconds()+" "
